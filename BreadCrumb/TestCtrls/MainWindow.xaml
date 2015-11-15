@@ -1,0 +1,18 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+				xmlns:local="clr-namespace:TestCtrls"
+        xmlns:BCControl="clr-namespace:BCControl;assembly=BCControl" x:Class="TestCtrls.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525"
+				MouseDown="Grid_MouseDown">
+  <Grid Name="GridMain">
+
+    <BCControl:BreadCrumbItem Name="BCITest" HorizontalAlignment="Left" Margin="49,48,0,0" VerticalAlignment="Top" Width="115"/>
+    <BCControl:BreadCrumb Name="BCSimpleTest" HorizontalAlignment="Left" Margin="49,141,0,0" VerticalAlignment="Top" Width="337"/>
+
+    <BCControl:BreadCrumb Name="BCDependencyTest" HorizontalAlignment="Left" Margin="49,200,0,0" VerticalAlignment="Top" Width="337"/>
+  </Grid>
+</Window>
