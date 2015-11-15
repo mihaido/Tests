@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,14 +23,16 @@ namespace BCControl
 	{
 		List<IEnumerable<string>> _dataSets = new List<IEnumerable<string>>();
 		List<BreadCrumbItem> _ctrls = new List<BreadCrumbItem>();
-		List<object> _path = new List<object>();
+		List<string> _path = new List<string>();
 		TextBox _tbLast = new TextBox();
+		const string _defaultEndText = "";
+
 
 		public BreadCrumb()
 		{
 			InitializeComponent();
 
-			_tbLast.Text = "";
+			_tbLast.Text = _defaultEndText;
 			_tbLast.VerticalAlignment = VerticalAlignment.Top;
 			_tbLast.BorderThickness = new Thickness(0);
 
@@ -41,7 +44,7 @@ namespace BCControl
 
 		public void AddDataSet(IEnumerable<string> newDataSet)
 		{
-			if (null != newDataSet)
+			if ((null != newDataSet) && (newDataSet.Count() > 0))
 			{
 				int nId = _dataSets.Count;
 
@@ -58,7 +61,18 @@ namespace BCControl
 				if (nId == 0)
 					bci.Text = "";
 				else
-					bci.Text = _dataSets[nId-1].First();
+				{
+					bci.Text = _path.Last();
+
+					//Debug.Assert(newDataSet.Contains(_path.Last()));
+					//
+					// TODO: I shoudl enforce that the new data set that arrived has in it's list the 
+					// last path object... - no need - text is from previous, list is unrelated and for next
+
+					//
+					// also maybe the path should stop holding objects...
+					// I am not ready to differentiate between display string and an internal value..
+				}
 
 				mainPanel.Children.Insert(nId, bci);
 				_tbLast.Text = newDataSet.First();
@@ -70,9 +84,23 @@ namespace BCControl
 		{
 			Bci_ItemExpanded(null);
     }
-		public void DropItemsFromIndex(int nIndex)
+		public void DropDataSetsFromIndex(int nIndex)
 		{
+			int nDataCount = _dataSets.Count;
+      if (nIndex < nDataCount)
+			{
+				IEnumerable<Control> ctrlsRemove = _ctrls.Skip(nIndex);
+				foreach (Control ctrl in ctrlsRemove)
+					mainPanel.Children.Remove(ctrl);
 
+				_dataSets = _dataSets.Take(nIndex).ToList();
+				_ctrls = _ctrls.Take(nIndex).ToList();
+				_path = _path.Take(nIndex).ToList();
+				if (nIndex > 0)
+					_tbLast.Text = _path.Last();
+				else
+					_tbLast.Text = _defaultEndText;
+			}
 		}
 
 		private void Bci_ItemExpanded(object sender)
@@ -104,7 +132,7 @@ namespace BCControl
 					_tbLast.Text = e.Value.ToString();
 				}
 
-				_path[nId] = e.Value;
+				_path[nId] = e.Value.ToString(); // TODO: perhaps this value shoudl be a string as well - for simplicity, for now - can be extended at any time...
 
 				if(null != ChildSelected)
 				{

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BCControl;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,10 +32,11 @@ namespace TestCtrls
 			
 			//
 			// simplest crumb case - add data ready and independent
+			/*
 			BCSimpleTest.AddDataSet(new string[] { "aa", "bb", "cc", "dd" });
 			BCSimpleTest.AddDataSet(new string[] { "11", "22", "33", "44", "55" });
 			BCSimpleTest.AddDataSet(new string[] { "miau", "hau", "bau" });
-			BCSimpleTest.ChildSelected += BCTest_ChildSelected;
+			BCSimpleTest.ChildSelected += BCTest_ChildSelected;*/
 
 			//
 			// test crumb with dependent data:
@@ -44,7 +46,7 @@ namespace TestCtrls
 			// start with a known folder like c:, populate only with that,
 			// and as the user chnages stuff react
 
-			string[] foldersHere = Directory.GetDirectories("c:");
+			IEnumerable<string> foldersHere = Directory.GetDirectories("d:\\", "*", SearchOption.TopDirectoryOnly).Select(u => GetLastFolderNameFromPath(u));
 			BCDependencyTest.AddDataSet(foldersHere);
 			BCDependencyTest.ChildSelected += BCDependencyTest_ChildSelected;
 
@@ -52,14 +54,44 @@ namespace TestCtrls
 
 		private void BCDependencyTest_ChildSelected(object sender, BCControl.BCSelectedEventArgs e)
 		{
-			IEnumerable<object> stablePath = e.StablePath;
-			string strStablePath = "c:\\";
-			foreach (object obj in stablePath)
-				strStablePath += obj.ToString() + "\\";
+			//
+			// in here I want to simulate a HDD folder browser, so whenever a new child is selected
+			//
+			// 1. I will drop all data sets after the current modified item
+			//   (I rely on the fact that the control is optimized to do nothing in case the very last item was changed)
+			// 2. list the subfolders of the new path
+			// 3. update the control with a new data set about the current path
 
-			string[] foldersHere = Directory.GetDirectories(strStablePath);
+			
+			//
+			// 1. 
+			BreadCrumb bcc = sender as BreadCrumb;
+			if (null != bcc)
+			{
+				bcc.DropDataSetsFromIndex(e.SelectionStep + 1);
 
+				string strPath = "d:\\";
+				foreach (string str in e.StablePath)
+					strPath += str + "\\";
+
+				//
+				// 2.
+				IEnumerable<string> foldersHere = Directory.GetDirectories(strPath).Select(u => GetLastFolderNameFromPath(u));
+
+				//
+				// 3.
+				bcc.AddDataSet(foldersHere); 
+			}
 		}
+
+		string GetLastFolderNameFromPath(string strFullPath)
+		{
+			int nIdx = strFullPath.LastIndexOf("\\");
+			if (nIdx > 0)
+				return strFullPath.Substring(nIdx+1, strFullPath.Length - nIdx - 1);
+			else
+				return strFullPath;
+    }
 
 		private void BCTest_ChildSelected(object sender, BCControl.BCSelectedEventArgs e)
 		{
@@ -73,7 +105,8 @@ namespace TestCtrls
 
 		private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			BCSimpleTest.Collapse();
+			//BCSimpleTest.Collapse();
+			BCDependencyTest.Collapse();
 		}
 	}
 }

@@ -6,13 +6,13 @@
 				xmlns:local="clr-namespace:TestCtrls"
         xmlns:BCControl="clr-namespace:BCControl;assembly=BCControl" x:Class="TestCtrls.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525"
+        Title="MainWindow" Height="450" Width="525"
 				MouseDown="Grid_MouseDown">
   <Grid Name="GridMain">
 
     <BCControl:BreadCrumbItem Name="BCITest" HorizontalAlignment="Left" Margin="49,48,0,0" VerticalAlignment="Top" Width="115"/>
-    <BCControl:BreadCrumb Name="BCSimpleTest" HorizontalAlignment="Left" Margin="49,141,0,0" VerticalAlignment="Top" Width="337"/>
+    <!--BCControl:BreadCrumb Name="BCSimpleTest" HorizontalAlignment="Left" Margin="49,141,0,0" VerticalAlignment="Top" Width="337"/-->
 
-    <BCControl:BreadCrumb Name="BCDependencyTest" HorizontalAlignment="Left" Margin="49,200,0,0" VerticalAlignment="Top" Width="337"/>
+    <BCControl:BreadCrumb Name="BCDependencyTest" HorizontalAlignment="Left" Margin="49,100,0,0" VerticalAlignment="Top" Width="337"/>
   </Grid>
 </Window>
